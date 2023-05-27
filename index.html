@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>Pop the bubbles! </title>
+  <link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+
+  <div class="instructions">
+    🪐 Click on the bubbles to pop them!
+    <br>
+    🪐 Hold right-click and move to see different angles!
+    <br>
+    🪐 Scroll to zoom in and out!
+    <br>
+    🪐 Press the C key to change background colors!
+    <br>
+    🪐 Press the M key to start/stop the music!
+    <br>
+  
+</div>
+<!-- partial:index.partial.html -->
+<div class="container">
+  <div class="sky"></div>
+  <div id="canvas"></div>
+</div>
+<script type="x-shader/x-vertex" id="vertexshader">
+
+  varying vec2 vUv;
+
+      void main() {
+
+        vUv = uv;
+
+        gl_Position = projectionMatrix * modelViewMatrix * vec4( position, 1.0 );
+
+      }
+    </script>
+
+<script type="x-shader/x-fragment" id="fragmentshader">
+
+  uniform sampler2D baseTexture;
+      uniform sampler2D bloomTexture;
+
+      varying vec2 vUv;
+
+      void main() {
+
+        gl_FragColor = ( texture2D( baseTexture, vUv ) + vec4( 1.0 ) * texture2D( bloomTexture, vUv ) );
+
+      }
+    </script>
+<!-- partial -->
+  <script src='https://unpkg.com/three@0.123.0/build/three.min.js'></script>
+<script src='https://unpkg.com/three@0.123.0/examples/js/loaders/GLTFLoader.js'></script>
+<script src='https://unpkg.com/three@0.123.0/examples/js/loaders/RGBELoader.js'></script>
+<script src='https://unpkg.com/three@0.123.0/examples/js/controls/OrbitControls.js'></script><script  src="./script.js"></script>
+
+
+<audio id="background_music" src="lofi.mp3" loop></audio>
+
+<button id="music_button" class="music-button">
+  <i id="music_icon" class="fa fa-volume-up"></i>
+</button>
+
+<script>
+  // Define a variable to hold the music state
+  let isMusicPlaying = false;
+
+  // Get the reference to the audio element
+  const backgroundMusic = document.getElementById('background_music');
+
+  // Function to play the music
+  const playMusic = () => {
+    backgroundMusic.play();
+    console.log('Music is playing');
+  };
+
+  // Function to stop the music
+  const stopMusic = () => {
+    backgroundMusic.pause();
+    backgroundMusic.currentTime = 0;
+    console.log('Music is stopped');
+  };
+
+  // Get the reference to the music button and icon
+  const musicButton = document.getElementById('music_button');
+  const musicIcon = document.getElementById('music_icon');
+
+  // Function to toggle the music state
+  const toggleMusic = () => {
+    isMusicPlaying = !isMusicPlaying; // Toggle the music state
+
+    // Update the UI based on the music state
+    if (isMusicPlaying) {
+      playMusic();
+      musicIcon.classList.remove('fa-volume-off');
+      musicIcon.classList.add('fa-volume-up');
+    } else {
+      stopMusic();
+      musicIcon.classList.remove('fa-volume-up');
+      musicIcon.classList.add('fa-volume-off');
+    }
+  };
+
+  // Add event listener to the music button
+  musicButton.addEventListener('click', toggleMusic);
+
+  // Add event listener to the document for keydown events
+  document.addEventListener('keydown', (event) => {
+    // Check for the key combination you want (in this case, the 'M' key)
+    if (event.key === 'm') {
+      toggleMusic();
+    }
+  });
+
+  // Start the music when the page is loaded
+  window.onload = playMusic;
+</script>
+</body>
+</html>
